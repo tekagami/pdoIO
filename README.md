@@ -205,6 +205,8 @@ If you use max number of buttons you must also insert the page number
 ]
 ```
 
+The key/value pairs of the WHERE sub array imploded by 'AND'
+
 ### DELETE Query Array
 
 ```php
