@@ -148,7 +148,7 @@ The Parameters are:
 * the max number of buttons in the pagination (so that you avoid having hundreds of buttons)
 * the current page
 
-If you use max buttons you must also insert the page number
+If you use max number of buttons you must also insert the page number
 
 ## API Reference
 
