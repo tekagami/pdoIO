@@ -138,6 +138,17 @@ $numPages = $pdoio->getnumPages($query, 10); // 10 items per page
 ```php
 $pages = $pdoio->getPages($query, 10, 5, 1); // per page, max buttons, current page
 ```
+Returns an array of page numbers.
+
+getPages($query, $maxperpage = 10, $maxbuttons = 10, $currentpage = null)
+
+The Parameters are:
+* the query array (the same one you are using to get the results)
+* records per page
+* the max number of buttons in the pagination (so that you avoid having hundreds of buttons)
+* the current page
+
+If you use max buttons you must also insert the page number
 
 ## API Reference
 
