@@ -12,7 +12,7 @@ class PDOIO {
         $this->pdo = $pdo;
     }
 
-    public function select($query) {
+    public function select(array $query): array {
         try {
             $sql = "SELECT ";
 
@@ -71,26 +71,32 @@ class PDOIO {
             }
 
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $rows;
+            
         } catch (PDOException $e) {
             throw new Exception("Database error in select: " . $e->getMessage());
         }
     }
 
     // handle get row by id
-    public function getById($table, $id) {
+    public function getById(string $table, int $id): array {
         try {
             $sql = "SELECT * FROM {$table} WHERE id = :id";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(":id", $id);
             $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return $row;
+
         } catch (PDOException $e) {
             throw new Exception("Database error in getById: " . $e->getMessage());
         }
     }
 
-    public function getTotal($query){
+    public function getTotal(array $query): int {
         try {
             $sql = "SELECT COUNT(*) as total";
             // Handle FROM clause
@@ -134,14 +140,14 @@ class PDOIO {
         }
     }
 
-    public function getnumPages($query, $maxperpage = 10){
+    public function getnumPages(array $query, int $maxperpage = 10): int {
         $total = $this->getTotal($query);
         $numPages = ceil($total / $maxperpage);
 
         return $numPages;
     }
 
-    public function getPages($query, $maxperpage = 10, $maxbuttons = 10, $currentpage = null){
+    public function getPages(array $query, int $maxperpage = 10, int $maxbuttons = 10, ?int $currentpage = null): array {
         $numPages = $this->getnumPages($query, $maxperpage);
         $pages = [];
         for ($i = 0; $i < $numPages; $i++) {
@@ -171,7 +177,7 @@ class PDOIO {
     }
 
     // Handle INSERT
-    public function insert($insertQuery) {
+    public function insert(array $insertQuery): int {
         try {
             $table = $insertQuery['TABLE'];
             $data = $insertQuery['DATA'];  // contains associative array of column => value
@@ -200,7 +206,7 @@ class PDOIO {
     }
 
     // Handle UPDATE
-    public function update($updateQuery) {
+    public function update(array $updateQuery): int {
         try {
             $table = $updateQuery['TABLE'];
             $data = $updateQuery['DATA'];  // contains associative array of column => value
@@ -241,15 +247,18 @@ class PDOIO {
             foreach ($where as $key => $value) {
                 $stmt->bindValue(":where_{$key}", $value);
             }
+            $stmt->execute();
 
-            return $stmt->execute();
+            $rowCount = $stmt->rowCount();
+
+            return $rowCount;
         } catch (PDOException $e) {
             throw new Exception("Database error in update: " . $e->getMessage());
         }
     }
 
     // Handle DELETE
-    public function delete($deleteQuery) {
+    public function delete(array $deleteQuery): int {
         $table = $deleteQuery['TABLE'];
         $where = $deleteQuery['WHERE'];  // contains associative array of column => value for WHERE clause
         $limit = isset($deleteQuery['LIMIT']) ? $deleteQuery['LIMIT'] : 1;  // default limit to 1, only on mySQL NOT on SQLite
@@ -278,23 +287,25 @@ class PDOIO {
                 $stmt->bindValue(":{$key}", $value);
             }
 
-            return $stmt->execute();
+            $stmt->execute();
+            $rowCount = $stmt->rowCount();
+            return $rowCount;
         } catch (PDOException $e) {
             throw new Exception("Database error in delete: " . $e->getMessage());
         }
     }
 
     // Handle deleteby id
-    public function deleteById($table, $id) {
+    public function deleteById(string $table, int $id): int {
         try {
             $sql = "DELETE FROM {$table} WHERE id = :id";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(":id", $id);
-            return $stmt->execute();
+            $stmt->execute();
+            $rowCount = $stmt->rowCount();
+            return $rowCount;
         } catch (PDOException $e) {
             throw new Exception("Database error in deleteById: " . $e->getMessage());
         }
     }
-
-
 }
