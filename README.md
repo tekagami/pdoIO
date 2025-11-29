@@ -175,11 +175,19 @@ If you use max number of buttons you must also insert the page number
 [
     'SELECT' => ['column1', 'column2'], // Optional array of columns, defaults to *
     'FROM' => 'table_name', // Required
-    'WHERE' => [ // Optional
-        ['col' => 'column', 'op' => 'operator', 'val' => 'value'],
-        'word' => 'AND/OR', // Logical operator
-        // ... more conditions
-    ],
+        'WHERE' => [
+        [
+            'col' => 'column',
+            'op' => 'operator',
+            'val' => 'value'
+        ]
+        , ['word' => 'AND/OR']
+        , [
+            'col' => 'column',
+            'op' => 'operator',
+            'val' => 'value'
+        ]
+    ],,
     'ORDER BY' => ['col' => 'column', 'dir' => 'ASC/DESC'], // Optional
     'LIMIT' => 10, // Optional
     'OFFSET' => 0 // Optional

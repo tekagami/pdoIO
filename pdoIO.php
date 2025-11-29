@@ -12,7 +12,7 @@ class PDOIO {
         $this->pdo = $pdo;
     }
 
-    public function select(array $query): array {
+    public function select(array $query): array|null {
         try {
             $sql = "SELECT ";
 
@@ -34,11 +34,14 @@ class PDOIO {
             if (isset($query['WHERE'])) {
                 $sql .= " WHERE ";
                 $whereClauses = [];
-                foreach ($query['WHERE'] as $condition) {
-                    if (isset($condition['word'])) {
-                        $whereClauses[] = strtoupper($condition['word']);
-                    } else {
-                        $whereClauses[] = "{$condition['col']} {$condition['op']} :{$condition['col']}";
+                foreach ($query['WHERE'] as $key => $condition) { // condition is always an array
+                    if (is_array($condition)){
+                        if (isset($condition['word'])){
+                            $whereClauses[] = strtoupper($condition['word']);
+                        } else {
+                            $placeholder = $condition['col'] . $key;
+                            $whereClauses[] = "{$condition['col']} {$condition['op']} :{$placeholder}";
+                        }
                     }
                 }
                 $sql .= implode(" ", $whereClauses);
@@ -59,13 +62,19 @@ class PDOIO {
                 $sql .= " OFFSET {$query['OFFSET']}";
             }
 
+            echo "<p>SQL: $sql</p>\n";
+
             $stmt = $this->pdo->prepare($sql);
 
             // Bind parameters for WHERE clause
             if (isset($query['WHERE'])) {
-                foreach ($query['WHERE'] as $condition) {
-                    if (!isset($condition['word'])) {
-                        $stmt->bindValue(":{$condition['col']}", $condition['val']);
+                foreach ($query['WHERE'] as $key => $condition) {
+                    if (is_array($condition)){
+
+                        if (!isset($condition['word'])) {
+                            $placeholder = $condition['col'] . $key;
+                            $stmt->bindValue(":{$placeholder}", $condition['val']);
+                        }
                     }
                 }
             }
@@ -73,7 +82,7 @@ class PDOIO {
             $stmt->execute();
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return $rows;
+            return $rows ?: null;
             
         } catch (PDOException $e) {
             throw new Exception("Database error in select: " . $e->getMessage());
@@ -81,7 +90,7 @@ class PDOIO {
     }
 
     // handle get row by id
-    public function getById(string $table, int $id): array {
+    public function getById(string $table, int $id): array|null {
         try {
             $sql = "SELECT * FROM {$table} WHERE id = :id";
             $stmt = $this->pdo->prepare($sql);
@@ -89,7 +98,7 @@ class PDOIO {
             $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $row;
+            return $row ?: null;
 
         } catch (PDOException $e) {
             throw new Exception("Database error in getById: " . $e->getMessage());
