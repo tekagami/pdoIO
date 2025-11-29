@@ -52,11 +52,17 @@ Build SELECT queries using an associative array:
 $query = [
     'SELECT' => ['id', 'name', 'email'], // Optional: defaults to *
     'FROM' => 'users',
-    'WHERE' => [
-        ['col' => 'status', 'op' => '=', 'val' => 'active'],
-        'word' => 'AND',
-        ['col' => 'age', 'op' => '>', 'val' => 18]
-    ],
+        [
+            'col' => 'column',
+            'op' => 'operator',
+            'val' => 'value'
+        ]
+        , ['word' => 'AND/OR']
+        , [
+            'col' => 'column',
+            'op' => 'operator',
+            'val' => 'value'
+        ]
     'ORDER BY' => ['col' => 'name', 'dir' => 'ASC'],
     'LIMIT' => 10,
     'OFFSET' => 0
