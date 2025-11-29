@@ -93,7 +93,7 @@ echo "</pre>";
 */
 
 // get one row by ID as array example
-$id = 25;
+$id = 3;
 $result = $pdoio->getById('data', $id);
 echo "<p><b>getById</b></p><pre>";
 print_r($result);

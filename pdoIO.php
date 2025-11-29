@@ -62,7 +62,6 @@ class PDOIO {
                 $sql .= " OFFSET {$query['OFFSET']}";
             }
 
-            echo "<p>SQL: $sql</p>\n";
 
             $stmt = $this->pdo->prepare($sql);
 
